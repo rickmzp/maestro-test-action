@@ -160,102 +160,6 @@ exports.createParentsIfNeeded = createParentsIfNeeded;
 
 /***/ }),
 
-/***/ 9286:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.install = void 0;
-const core = __importStar(__nccwpck_require__(2186));
-const tc = __importStar(__nccwpck_require__(7784));
-const exec = __importStar(__nccwpck_require__(1514));
-const path = __importStar(__nccwpck_require__(1017));
-const fs = __importStar(__nccwpck_require__(7147));
-const fse = __importStar(__nccwpck_require__(5630));
-const os = __importStar(__nccwpck_require__(2037));
-const HOME = os.homedir();
-const IDB_HOME = path.join(HOME, '.idb');
-const IDB_NAME = 'idb-companion';
-const IDB_VERSION = '1.1.8';
-const idbDownloadUrl = `https://github.com/facebook/idb/releases/download/v${IDB_VERSION}/idb-companion.universal.tar.gz`;
-function idbExec(binPath) {
-    return path.join(binPath, 'idb_companion');
-}
-function findIdbInstallation() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const result = { found: false, path: '' };
-        const idbPath = tc.find(IDB_NAME, IDB_VERSION);
-        if (idbPath.length !== 0) {
-            result.found = true;
-            result.path = path.join(idbPath, 'bin');
-        }
-        return result;
-    });
-}
-function install() {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.startGroup('Installing idb_companion');
-        const installation = yield findIdbInstallation();
-        let idbPath = '';
-        if (installation.found) {
-            idbPath = installation.path;
-        }
-        else {
-            if (fs.existsSync(IDB_HOME))
-                fse.removeSync(IDB_HOME);
-            fs.mkdirSync(IDB_HOME, { recursive: true });
-            core.info('Downloading idb_companion');
-            const idbToolTar = yield tc.downloadTool(idbDownloadUrl);
-            core.info('Untaring idb_companion');
-            yield exec.exec('ls', [idbToolTar]);
-            const idbExtractedLocation = yield tc.extractTar(idbToolTar, IDB_HOME);
-            const cachedPath = yield tc.cacheDir(path.join(idbExtractedLocation, 'idb-companion.universal'), 'idb-companion', IDB_VERSION);
-            idbPath = path.join(cachedPath, 'bin');
-            core.info('idb_companion successfuly installed');
-        }
-        core.addPath(idbPath);
-        core.endGroup();
-        return idbExec(idbPath);
-    });
-}
-exports.install = install;
-
-
-/***/ }),
-
 /***/ 7215:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -370,6 +274,7 @@ exports.install = install;
 function run(execPath, envVariables, flow, report, workdir) {
     return __awaiter(this, void 0, void 0, function* () {
         const params = [];
+        params.push(`--verbose`);
         params.push('test');
         const env = envVariables
             .map(value => value.trim())
@@ -377,9 +282,9 @@ function run(execPath, envVariables, flow, report, workdir) {
         for (const variable of env) {
             params.push('-e', variable);
         }
-        params.push('--format=junit');
-        params.push(`--output=${report}`);
-        params.push(`--no-ansi`);
+        // params.push('--format=junit')
+        // params.push(`--output=${report}`)
+        // params.push(`--no-ansi`)
         params.push(flow);
         return yield exec.exec(execPath, params, {
             cwd: workdir,
@@ -432,7 +337,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const fs = __importStar(__nccwpck_require__(7147));
-const idb = __importStar(__nccwpck_require__(9286));
+// import * as idb from './idb'
 const constants_1 = __nccwpck_require__(5105);
 const fsutils = __importStar(__nccwpck_require__(6178));
 const maestro = __importStar(__nccwpck_require__(7215));
@@ -444,10 +349,10 @@ function checkOS() {
 }
 function setup() {
     return __awaiter(this, void 0, void 0, function* () {
-        if (process.platform === 'darwin') {
-            const idbExec = yield idb.install();
-            core.debug(`idb_companion exec: ${idbExec}`);
-        }
+        // if (process.platform === 'darwin') {
+        //   const idbExec = await idb.install()
+        //   core.debug(`idb_companion exec: ${idbExec}`)
+        // }
         const maestroExec = yield maestro.install();
         core.debug(`maestro exec: ${maestroExec}`);
     });

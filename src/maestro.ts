@@ -90,6 +90,7 @@ export async function run(
   workdir: string
 ): Promise<number> {
   const params: string[] = []
+  params.push(`--verbose`)
   params.push('test')
   const env = envVariables
     .map(value => value.trim())
@@ -97,9 +98,9 @@ export async function run(
   for (const variable of env) {
     params.push('-e', variable)
   }
-  params.push('--format=junit')
-  params.push(`--output=${report}`)
-  params.push(`--no-ansi`)
+  // params.push('--format=junit')
+  // params.push(`--output=${report}`)
+  // params.push(`--no-ansi`)
   params.push(flow)
   return await exec.exec(execPath, params, {
     cwd: workdir,

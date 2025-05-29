@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as fs from 'fs'
-import * as idb from './idb'
+// import * as idb from './idb'
 import {ActionInputs, ActionOutputs} from './constants'
 import * as fsutils from './fsutils'
 import * as maestro from './maestro'
@@ -13,10 +13,10 @@ function checkOS(): void {
 }
 
 async function setup(): Promise<void> {
-  if (process.platform === 'darwin') {
-    const idbExec = await idb.install()
-    core.debug(`idb_companion exec: ${idbExec}`)
-  }
+  // if (process.platform === 'darwin') {
+  //   const idbExec = await idb.install()
+  //   core.debug(`idb_companion exec: ${idbExec}`)
+  // }
 
   const maestroExec = await maestro.install()
   core.debug(`maestro exec: ${maestroExec}`)
